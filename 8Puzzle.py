@@ -8,10 +8,10 @@ import heapq
 import math
 from Tkinter import *
 class Node:
-    def __init__( self, board, parent, operator, depth):
+    def __init__( self, board, parent, depth,n):
         self.board= board
         self.parent = parent
-        self.operator = operator
+        self.n = n
         self.depth = depth
         self.manhattan_cost = self.depth+self.Manhattan([0,1,2,3,4,5,6,7,8])
         self.euclidean_cost= self.depth+self.Euclidean([0,1,2,3,4,5,6,7,8])
@@ -48,8 +48,13 @@ class Node:
         return distance
 #    def __lt__(self, other):
 #         return self.manhattan_cost < other.manhattan_cost
+#    def __lt__(self, other):
+#         return self.euclidean_cost < other.euclidean_cost
     def __lt__(self, other):
-         return self.euclidean_cost < other.euclidean_cost
+         if self.n==1:
+             return self.manhattan_cost < other.manhattan_cost    
+         if self.n==2:
+             return self.euclidean_cost < other.euclidean_cost     
 def getx(index):
     if index in [0,1,2]:
         return 0
@@ -121,29 +126,29 @@ def moveDown( board ):
     
 "buildddddddd"
 
-def createNode( board, parent, operator, depth):
-	return Node( board, parent, operator, depth)
+def createNode( board, parent, depth,n):
+	return Node( board, parent, depth,n)
 
-def expandNode( node ):
+def expandNode( node,n ):
     children = []
     
            
     if moveDown(node.board) != None:
-            newNode=createNode( moveDown( node.board ), node, "d", node.depth + 1  )
+            newNode=createNode( moveDown( node.board ), node, node.depth + 1,n  )
             if node.checkPath(newNode.board):
                 children.append(newNode)
     if moveUp(node.board) != None:
-        newNode=createNode( moveUp( node.board ), node, "u", node.depth + 1)
+        newNode=createNode( moveUp( node.board ), node, node.depth + 1,n)
         if node.checkPath(newNode.board):
             children.append(newNode)
          
     if moveLeft(node.board) != None:
-            newNode=createNode( moveLeft( node.board ), node, "l", node.depth + 1)
+            newNode=createNode( moveLeft( node.board ), node, node.depth + 1,n)
             if node.checkPath(newNode.board):
                  children.append(newNode)
               
     if moveRight(node.board) != None:
-            newNode=createNode( moveRight( node.board), node, "r", node.depth + 1)
+            newNode=createNode( moveRight( node.board), node, node.depth + 1,n)
             if node.checkPath(newNode.board):
                 children.append(newNode)
     return children
@@ -152,7 +157,7 @@ def expandNode( node ):
 "bfsssssssssss"
 def BFS(start,goal):
     frontier =[]
-    frontier.append( createNode( start, None, None, 0) )
+    frontier.append( createNode( start, None, 0,0) )
     while True:
         if len( frontier ) == 0:
             return None
@@ -167,12 +172,12 @@ def BFS(start,goal):
                  moves.insert(0, temp.parent)
                  temp = temp.parent
             return moves
-        children= expandNode(node) 
+        children= expandNode(node,0) 
         frontier.extend(children)
 "dfssssssssssss"
 def DFS(start,goal):
     frontier =[]
-    frontier.append( createNode( start, None, None, 0) )
+    frontier.append( createNode( start, None, 0,0) )
     while True:
         if len( frontier ) == 0:
             return None
@@ -187,12 +192,12 @@ def DFS(start,goal):
                  moves.insert(0, temp.parent)
                  temp = temp.parent
             return moves
-        children= expandNode(node) 
+        children= expandNode(node,0) 
         frontier.extend(children) 
 
-def A_star(start,goal):
+def A_star(start,goal,n):
     frontier=[]
-    start=createNode(start, None, None, 0)
+    start=createNode(start, None, 0,n)
     heapq.heappush(frontier,start)
     
     while True:
@@ -210,7 +215,7 @@ def A_star(start,goal):
                  moves.insert(0, temp.parent)
                  temp = temp.parent
             return moves
-        children= expandNode(node)
+        children= expandNode(node,n)
         for num in range(0,len(children)):
             heapq.heappush(frontier,children[num])
           
@@ -237,13 +242,15 @@ def main():
 #            tiles[i].grid(row=row,column=col)
 #            i=i+1
 #    root.mainloop() 
-    method=int(input("Choose method:1-bfs 2-dfs 3-a-star :"))
+    method=int(input("Choose method:1-bfs 2-dfs 3-a-star(manhattan) 4-a-star(euclidean) :"))
     if method==1:
         moves = BFS(startState,goal)
     if method==2:    
         moves = DFS(startState,goal)
     if method==3:
-        moves = A_star(startState,goal)
+        moves = A_star(startState,goal,1)
+    if method==4:
+        moves = A_star(startState,goal,2)    
     print("Moves are")
     for num in range(0,len(moves)):
          displayBoard(moves[num].board)
