@@ -6,9 +6,9 @@ Created on Thu Mar 15 15:23:44 2018
 """ 
 import heapq
 import math
-import tkinter
+from Tkinter import *
 class Node:
-    def __init__( self, board, parent, operator, depth, manhattan_cost,euclidean_cost):
+    def __init__( self, board, parent, operator, depth):
         self.board= board
         self.parent = parent
         self.operator = operator
@@ -46,9 +46,10 @@ class Node:
             y2=gety(index2)
             distance+=math.sqrt((x1-x2)**2+(y1-y2)**2)
         return distance
+#    def __lt__(self, other):
+#         return self.manhattan_cost < other.manhattan_cost
     def __lt__(self, other):
-         return self.manhattan_cost < other.manhattan_cost
-   
+         return self.euclidean_cost < other.euclidean_cost
 def getx(index):
     if index in [0,1,2]:
         return 0
@@ -120,29 +121,29 @@ def moveDown( board ):
     
 "buildddddddd"
 
-def createNode( board, parent, operator, depth, manhattan_cost,euclidean_cost):
-	return Node( board, parent, operator, depth, manhattan_cost,euclidean_cost )
+def createNode( board, parent, operator, depth):
+	return Node( board, parent, operator, depth)
 
 def expandNode( node ):
     children = []
     
            
     if moveDown(node.board) != None:
-            newNode=createNode( moveDown( node.board ), node, "d", node.depth + 1, 0,0 )
+            newNode=createNode( moveDown( node.board ), node, "d", node.depth + 1  )
             if node.checkPath(newNode.board):
                 children.append(newNode)
     if moveUp(node.board) != None:
-        newNode=createNode( moveUp( node.board ), node, "u", node.depth + 1, 0 ,0)
+        newNode=createNode( moveUp( node.board ), node, "u", node.depth + 1)
         if node.checkPath(newNode.board):
             children.append(newNode)
          
     if moveLeft(node.board) != None:
-            newNode=createNode( moveLeft( node.board ), node, "l", node.depth + 1, 0 ,0)
+            newNode=createNode( moveLeft( node.board ), node, "l", node.depth + 1)
             if node.checkPath(newNode.board):
                  children.append(newNode)
               
     if moveRight(node.board) != None:
-            newNode=createNode( moveRight( node.board), node, "r", node.depth + 1, 0 ,0)
+            newNode=createNode( moveRight( node.board), node, "r", node.depth + 1)
             if node.checkPath(newNode.board):
                 children.append(newNode)
     return children
@@ -151,7 +152,7 @@ def expandNode( node ):
 "bfsssssssssss"
 def BFS(start,goal):
     frontier =[]
-    frontier.append( createNode( start, None, None, 0, 0 ,0) )
+    frontier.append( createNode( start, None, None, 0) )
     while True:
         if len( frontier ) == 0:
             return None
@@ -171,7 +172,7 @@ def BFS(start,goal):
 "dfssssssssssss"
 def DFS(start,goal):
     frontier =[]
-    frontier.append( createNode( start, None, None, 0, 0 ,0) )
+    frontier.append( createNode( start, None, None, 0) )
     while True:
         if len( frontier ) == 0:
             return None
@@ -191,7 +192,7 @@ def DFS(start,goal):
 
 def A_star(start,goal):
     frontier=[]
-    start=createNode(start, None, None, 0, 0 ,0)
+    start=createNode(start, None, None, 0)
     heapq.heappush(frontier,start)
     
     while True:
@@ -218,21 +219,34 @@ def A_star(start,goal):
        
 
 def main():
-    startState=[1,4,2,6,5,8,7,3,0]
+     
+    startState=[]
+    print('Enter start state element by element:')
+    for i in range(9):
+        x = int(input('-->'))
+        startState.append(x)
+    print startState    
     goal = [0,1,2,3,4,5,6,7,8]
-    tiles=[]
-    i=0
-    root=tkinter.Tk()
-    for num in range(0,9):
-       tiles.append(tkinter.Label(root,text=goal[num]))
-    for row in range(3):
-        for col in range(3):
-            tiles[i].grid(row=row,column=col)
-            i=i+1
-    root.mainloop()  
-    moves = A_star(startState,goal)
+#    tiles=[]
+#    i=0
+#    root=tkinter.Tk()
+#    for num in range(0,9):
+#       tiles.append(tkinter.Label(root,text=goal[num]))
+#    for row in range(3):
+#        for col in range(3):
+#            tiles[i].grid(row=row,column=col)
+#            i=i+1
+#    root.mainloop() 
+    method=int(input("Choose method:1-bfs 2-dfs 3-a-star :"))
+    if method==1:
+        moves = BFS(startState,goal)
+    if method==2:    
+        moves = DFS(startState,goal)
+    if method==3:
+        moves = A_star(startState,goal)
     print("Moves are")
     for num in range(0,len(moves)):
          displayBoard(moves[num].board)
+         
 if __name__ == "__main__":
 	main()    
