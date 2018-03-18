@@ -7,14 +7,15 @@ Created on Thu Mar 15 15:23:44 2018
 import heapq
 import math
 import tkinter
+import time
 class Node:
     def __init__( self, board, parent, operator, depth, manhattan_cost,euclidean_cost):
         self.board= board
         self.parent = parent
         self.operator = operator
         self.depth = depth
-        self.manhattan_cost = self.depth+self.Manhattan([0,1,2,3,4,5,6,7,8])
-        self.euclidean_cost= self.depth+self.Euclidean([0,1,2,3,4,5,6,7,8])
+        self.manhattan_cost = self.depth+self.Manhattan([1,2,3,4,5,6,7,8,0])
+        self.euclidean_cost= self.depth+self.Euclidean([1,2,3,4,5,6,7,8,0])
     def checkPath(self,nodeBoard):
         temp=self
         while True:
@@ -219,20 +220,32 @@ def A_star(start,goal):
 
 def main():
     startState=[1,4,2,6,5,8,7,3,0]
-    goal = [0,1,2,3,4,5,6,7,8]
+    goal = [1,2,3,4,5,6,7,8,0]
     tiles=[]
     i=0
     root=tkinter.Tk()
+    root.state('zoomed')
+    root.title('8-Puzzle')
+    root.geometry("50x200")
+    root.maxsize(50,200)
+    root.resizable(1,1)
+    f=tkinter.Frame(master=root,bg='pink')
+    f.pack(fill=tkinter.BOTH,expand=1)
     for num in range(0,9):
-       tiles.append(tkinter.Label(root,text=goal[num]))
-    for row in range(3):
+       tiles.append(tkinter.Label(master=f,text=goal[num],borderwidth=2,relief="groove",font='times 40'))
+    for rows in range(3):
         for col in range(3):
-            tiles[i].grid(row=row,column=col)
+            tiles[i].grid(row=rows,column=col,sticky="nsew")
             i=i+1
-    root.mainloop()  
     moves = A_star(startState,goal)
+    for i in range(0,len(moves)):
+        for num in range(0,9):
+            tiles[num]['text']=moves[i].board[num]
+    
     print("Moves are")
     for num in range(0,len(moves)):
          displayBoard(moves[num].board)
+    root.mainloop() 
+   
 if __name__ == "__main__":
 	main()    
