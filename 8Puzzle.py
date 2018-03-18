@@ -6,6 +6,7 @@ Created on Thu Mar 15 15:23:44 2018
 """ 
 import heapq
 import math
+import timeit
 class Node:
     def __init__( self, board, parent, operator, depth):
         self.board= board
@@ -147,9 +148,10 @@ def expandNode( node ):
                 children.append(newNode)
     return children
              
-
+nodes_Expanded=0
 "bfsssssssssss"
 def BFS(start,goal):
+    global nodes_Expanded
     frontier =[]
     frontier.append( createNode( start, None, None, 0) )
     while True:
@@ -166,10 +168,12 @@ def BFS(start,goal):
                  moves.insert(0, temp.parent)
                  temp = temp.parent
             return moves
+        nodes_Expanded=nodes_Expanded+1
         children= expandNode(node) 
         frontier.extend(children)
 "dfssssssssssss"
 def DFS(start,goal):
+    global nodes_Expanded
     frontier =[]
     frontier.append( createNode( start, None, None, 0) )
     while True:
@@ -186,10 +190,12 @@ def DFS(start,goal):
                  moves.insert(0, temp.parent)
                  temp = temp.parent
             return moves
+        nodes_Expanded=nodes_Expanded+1
         children= expandNode(node) 
         frontier.extend(children) 
 
 def A_star(start,goal):
+    global nodes_Expanded
     frontier=[]
     start=createNode(start, None, None, 0)
     heapq.heappush(frontier,start)
@@ -209,6 +215,7 @@ def A_star(start,goal):
                  moves.insert(0, temp.parent)
                  temp = temp.parent
             return moves
+        nodes_Expanded=nodes_Expanded+1
         children= expandNode(node)
         for num in range(0,len(children)):
             heapq.heappush(frontier,children[num])
@@ -217,35 +224,35 @@ def A_star(start,goal):
     
        
 
-def main():
-     
+def main(): 
     startState=[]
     print('Enter start state element by element:')
     for i in range(9):
         x = int(input('-->'))
         startState.append(x)
-    print (startState)  
+    print (startState) 
     goal = [0,1,2,3,4,5,6,7,8]
-#    tiles=[]
-#    i=0
-#    root=tkinter.Tk()
-#    for num in range(0,9):
-#       tiles.append(tkinter.Label(root,text=goal[num]))
-#    for row in range(3):
-#        for col in range(3):
-#            tiles[i].grid(row=row,column=col)
-#            i=i+1
-#    root.mainloop() 
     method=int(input("Choose method:1-bfs 2-dfs 3-a-star :"))
     if method==1:
+        start = timeit.default_timer()
         moves = BFS(startState,goal)
-    if method==2:    
+        stop = timeit.default_timer()
+        print ("Running time is: %d s" %(stop - start ))
+    if method==2:  
+        start = timeit.default_timer()
         moves = DFS(startState,goal)
+        stop = timeit.default_timer()
+        print ("Running time is: %d s" %(stop - start ))
     if method==3:
+        start = timeit.default_timer()
         moves = A_star(startState,goal)
-    print("Moves are")
+        stop = timeit.default_timer()
+        print ("Running time is: %d s" %(stop - start ))
+    print("Moves are:")
     for num in range(0,len(moves)):
          displayBoard(moves[num].board)
-         
+    print("Cost of path is: %d" %moves[len(moves)-1].depth) 
+    print("Depth of path is: %d" %moves[len(moves)-1].depth)
+    print("Number of nodes expanded is: %d "%nodes_Expanded)
 if __name__ == "__main__":
 	main()    
