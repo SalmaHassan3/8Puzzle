@@ -52,10 +52,10 @@ class Node:
             distance+=math.sqrt((x1-x2)**2+(y1-y2)**2)
         return distance
 #Less than function to compare nodes according to their costs(used by heap in A* search)
-    def __lt__(self, other):
-         return self.manhattan_cost < other.manhattan_cost
 #    def __lt__(self, other):
-#         return self.euclidean_cost < other.euclidean_cost
+#         return self.manhattan_cost < other.manhattan_cost
+    def __lt__(self, other):
+         return self.euclidean_cost < other.euclidean_cost
 #Takes index of element in board reprsented by 1-D array and returns its X co-ordinate in 2-D board         
 def getx(index):
     if index in [0,1,2]:
@@ -155,6 +155,7 @@ def expandNode( node ):
 nodes_Expanded=0
 #BFS search
 def BFS(start,goal):
+    print("Visited Nodes:")
     global nodes_Expanded
     frontier =[]
     frontier.append( createNode( start, None, None, 0))
@@ -162,6 +163,7 @@ def BFS(start,goal):
         if len( frontier ) == 0:
             return None
         node = frontier.pop(0)
+        displayBoard(node.board)
         if node.board == goal:
             moves = []
             moves.insert(0, node)
@@ -178,6 +180,7 @@ def BFS(start,goal):
         frontier.extend(children)
 #DFS search
 def DFS(start,goal):
+    print("Visited Nodes:")
     global nodes_Expanded
     frontier =[]
     frontier.append( createNode( start, None, None, 0) )
@@ -185,6 +188,7 @@ def DFS(start,goal):
         if len( frontier ) == 0:
             return None
         node = frontier.pop()
+        displayBoard(node.board)
         if node.board == goal:          
             moves = []
             moves.insert(0, node)
@@ -200,6 +204,7 @@ def DFS(start,goal):
         frontier.extend(children) 
 #A* search
 def A_star(start,goal):
+    print("Visited Nodes:")
     global nodes_Expanded
     frontier=[]
     start=createNode(start, None, None, 0)
@@ -210,6 +215,7 @@ def A_star(start,goal):
         if len( frontier ) == 0:
             return None
         node=heapq.heappop(frontier)
+        displayBoard(node.board)
         if node.board == goal:          
             moves = []
             moves.insert(0, node)
@@ -226,13 +232,14 @@ def A_star(start,goal):
             heapq.heappush(frontier,children[num])
  
 def main(): 
-    startState=[]
     start=stop=0
-    print('Enter start state element by element:')
-    for i in range(9):
-        x = int(input('-->'))
-        startState.append(x)
-    print (startState) 
+#    startState=[]
+#    print('Enter start state element by element:')
+#    for i in range(9):
+#        x = int(input('-->'))
+#        startState.append(x)
+#    print (startState) 
+    startState=[1,2,3,4,0,5,6,7,8]
     goal = [0,1,2,3,4,5,6,7,8]
     method=int(input("Choose method:1-bfs 2-dfs 3-a-star :"))
     if method==1:
